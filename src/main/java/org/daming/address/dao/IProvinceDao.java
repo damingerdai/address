@@ -7,4 +7,6 @@ import java.util.List;
 public interface IProvinceDao {
 
     List<Province> listProvinces();
+
+    Province getProvince(String code);
 }

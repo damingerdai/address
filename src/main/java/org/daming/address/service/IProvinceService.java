@@ -8,4 +8,6 @@ public interface IProvinceService {
 
 
     List<Province> listProvinces();
+
+    Province getProvince(String code);
 }
