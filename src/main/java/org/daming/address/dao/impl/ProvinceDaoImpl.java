@@ -1,24 +1,18 @@
 package org.daming.address.dao.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.daming.address.dao.IProvinceDao;
 import org.daming.address.pojo.Province;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import org.daming.address.utils.DataLoader;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class ProvinceDaoImpl implements IProvinceDao  {
 
-    private ObjectMapper jsonMapper;
+    private DataLoader dataLoader;
 
     private List<Province> provinces;
 
@@ -32,25 +26,16 @@ public class ProvinceDaoImpl implements IProvinceDao  {
         return this.provinces.stream().filter(p -> p.getCode().equals(code)).findFirst().get();
     }
 
-    public ProvinceDaoImpl(ObjectMapper jsonMapper) {
+    public ProvinceDaoImpl(DataLoader dataLoader) {
         super();
-        this.jsonMapper = jsonMapper;
+        this.dataLoader = dataLoader;
         this.provinces = new ArrayList<>(31);
     }
 
     @PostConstruct
     private void init() throws Exception {
-        Resource resource = new ClassPathResource("provinces.json");
-        StringBuilder sb = new StringBuilder();
-        try (InputStream is = resource.getInputStream();BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-        }
+        this.provinces = this.dataLoader.load("provinces.json", Province.class);
 
-        String content = sb.toString();
-        this.provinces = this.jsonMapper.readValue(content, new TypeReference<List<Province>>() {});
     }
 
 }
